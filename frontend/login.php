@@ -2,6 +2,7 @@
 session_start();
 require_once '../backend/db.php';
 
+// Redirect if already logged in
 if (isset($_SESSION['id_user'])) {
     header("Location: dashboard.php");
     exit();
@@ -9,9 +10,8 @@ if (isset($_SESSION['id_user'])) {
 
 $error = null;
 
-// Only process form if it was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
     if (empty($email) || empty($password)) {
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user = $result->fetch_assoc()) {
             if (password_verify($password, $user['password'])) {
-                $_SESSION['id_user'] = $user['id_user'];
+                $_SESSION['id_user'] = $user['id']; // assuming 'id' column
                 $_SESSION['email'] = $user['email'];
                 header("Location: dashboard.php");
                 exit();
@@ -35,6 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error = "Email tidak ditemukan!";
         }
+
+        $stmt->close();
     }
 }
 ?>
@@ -48,42 +50,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Taskify | Login</title>
   </head>
   <body class="bg-red-200">
-    <!-- Move error message inside the form and only show after submission -->
     <div class="container mx-auto grow grid grid-cols-2 my-14">
         <div class="flex flex-col h-[920px]">
             <div>
                 <img src="../src/asset/icon/logo-white.svg" alt="logo" />
             </div>
-
             <div class="flex-grow flex items-center justify-center">
                 <div class="flip-slideshow">
                     <img class="h-[574px]" id="flipImage" src="../src/asset/icon/calendar.svg" alt="icon" />
                 </div>
             </div>
         </div>
+
         <div class="bg-primary rounded-[20px] h-[920px] items-end grid">
             <form class="px-8 flex-col flex w-full" method="POST" action="login.php">
                 <div class="block">
                     <h1 class="font-mont text-shade text-8xl font-medium tracking-[-14.4px]">Login</h1>
                 </div>
 
-                <!-- Error message here - only shows after submission -->
-                <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($error)): ?>
-                    <p class="text-red-500 mb-4"><?= $error ?></p>
+                <?php if (!empty($error)): ?>
+                    <p class="text-red-500 mb-4 mt-2"><?= htmlspecialchars($error) ?></p>
                 <?php endif; ?>
 
                 <div class="grid grid-cols-2 gap-x-[60px] gap-y-4 mt-4">
                     <div>
-                        <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Email</label>
-                        <input type="email" name="email" class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]" />
+                        <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1">Email</label>
+                        <input type="email" name="email" required class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]" />
                     </div>
                     <div>
-                        <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Password</label>
-                        <input type="password" name="password" class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]" />
+                        <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1">Password</label>
+                        <input type="password" name="password" required class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]" />
                     </div>
                     <div></div>
                     <div class="text-right">
-                        <a href="./signup.php" class="font-dm text-[16px] italic underline hover:decoration-amber-300 tracking-[-1.12px] font-[300px]">Create an account?</a>
+                        <a href="./signup.php" class="font-dm text-[16px] italic underline hover:decoration-amber-300 tracking-[-1.12px]">Create an account?</a>
                     </div>
                 </div>
                 <span class="flex px-[52px] justify-end pb-[52px]">
@@ -94,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
+
     <script>
         const images = [
             "../src/asset/icon/calendar.svg",
