@@ -1,0 +1,61 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@theme {
+  --font-mont: "Montserrat", "sans-serif";
+  --font-dm: "DM Sans", sans-serif;
+  --color-accent: #020202;
+  --color-primary: #F9F9F9;
+  --color-shade: #111111;
+  --color-inactive: #979797;
+  --color-warn: #dd0000;
+}
+@layer utilities {
+    .container {
+        width: 100%;
+
+        @media (min-width: 40rem) {
+        max-width: 40rem;
+        }
+
+        @media (min-width: 48rem) {
+        max-width: 48rem;
+        }
+
+        @media (min-width: 64rem) {
+        max-width: 64rem;
+        }
+
+        @media (min-width: 80rem) {
+        max-width: 80rem;
+        }
+
+        @media (min-width: 96rem) {
+        max-width: 110rem !important;
+        }
+    }
+}
+.flip-slideshow {
+  height: 574px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#flipImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  backface-visibility: hidden;
+  transition: transform 0.5s ease-in-out;
+  transform-style: preserve-3d;
+}
+.hide-scrollbar {
+  overflow: auto;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Opera */
+}

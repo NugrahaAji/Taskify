@@ -1,0 +1,25 @@
+{
+  "name": "taskify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx @tailwindcss/cli -i ./src/input.css -o ./src/style.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NugrahaAji/Taskify.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NugrahaAji/Taskify/issues"
+  },
+  "homepage": "https://github.com/NugrahaAji/Taskify#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.8",
+    "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {}
+}
