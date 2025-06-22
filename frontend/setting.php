@@ -11,10 +11,12 @@ if (!isset($_SESSION['id_user'])) {
 $user_id = $_SESSION['id_user'];
 
 // Ambil data user
-$stmt = $conn->prepare("SELECT username, email FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($username, $email);
+$stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
+$stmt->fetch();
+$stmt->close();
 
 // Logout
 if (isset($_POST['logout'])) {
@@ -66,22 +68,30 @@ if (isset($_POST['delete_account'])) {
     </nav>
 
     <div>
-      <img src="../src/asset/img/gradient.png" alt="">
+      <?php if (!empty($cover_picture) && $cover_picture !== ''): ?>
+        <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="w-full max-h-48 object-cover rounded-lg" />
+      <?php else: ?>
+        <img src="../src/asset/img/gradient.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover rounded-lg" />
+      <?php endif; ?>
     </div>
 
     <div class="max-w-[1120px] mx-auto">
       <div class="w-full space-x-6 flex -mt-[57px]">
-        <div class="flex flex-row">
-          <div>
-            <img src="../src/asset/img/profile.svg" alt="">
+          <div class="flex flex-row">
+            <div>
+              <?php if (!empty($profile_picture)): ?>
+                <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="max-h-24 rounded-lg" />
+              <?php else: ?>
+                <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="max-h-24 rounded-lg" />
+              <?php endif; ?>
+            </div>
           </div>
-        </div>
-        <div class="flex mt-[52px] w-full items-center">
-          <div>
-            <h1 class="font-mont text-[32px] font-semibold tracking-[-2.88px] text-accent"><?= htmlspecialchars($username) ?></h1>
-            <h1 class="font-mont text-[16px] font-normal tracking-[-1.28px] text-inactive -mt-2"><?= htmlspecialchars($email) ?></h1>
+          <div class="flex mt-[52px] w-full items-center">
+            <div>
+              <h1 class="font-mont text-[32px] font-semibold tracking-[-2.88px] text-accent"><?= htmlspecialchars($username) ?></h1>
+              <h1 class="font-mont text-[16px] font-normal tracking-[-1.28px] text-inactive -mt-2"><?= htmlspecialchars($email) ?></h1>
+            </div>
           </div>
-        </div>
       </div>
 
       <div class="mt-12">
@@ -92,24 +102,24 @@ if (isset($_POST['delete_account'])) {
           </a>
         </div>
 
-        <div class="grid grid-cols-2 gap-x-[60px] gap-y-[18px] mt-4">
-          <div>
-            <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Username</label>
-            <input type="text" value="<?= htmlspecialchars($username) ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
+          <div class="grid grid-cols-2 gap-x-[60px] gap-y-[18px] mt-4">
+            <div>
+              <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Username</label>
+              <input type="text" value="<?= htmlspecialchars($username) ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
+            </div>
+            <div>
+              <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Bio</label>
+              <input type="text" value="<?= htmlspecialchars($bio ?? '') ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
+            </div>
+            <div>
+              <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Email</label>
+              <input type="text" value="<?= htmlspecialchars($email) ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
+            </div>
+            <div>
+              <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Password</label>
+              <input type="password" value="********" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
+            </div>
           </div>
-          <div>
-            <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Bio</label>
-            <input type="text" value="<?= htmlspecialchars($bio) ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
-          </div>
-          <div>
-            <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Email</label>
-            <input type="text" value="<?= htmlspecialchars($email) ?>" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
-          </div>
-          <div>
-            <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Password</label>
-            <input type="password" value="********" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]" disabled />
-          </div>
-        </div>
 
         <div class="space-y-3 mt-6">
           <form method="post">

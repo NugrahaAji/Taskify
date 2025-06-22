@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="../src/style.css" rel="stylesheet" />
     <title>Taskify | Login</title>
   </head>
-  <body class="bg-red-200">
+  <body class="bg-accent">
     <div class="container mx-auto grow grid grid-cols-2 my-14">
         <div class="flex flex-col h-[920px]">
             <div>
@@ -57,19 +57,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="flex-grow flex items-center justify-center">
                 <div class="flip-slideshow">
-                    <img class="h-[574px]" id="flipImage" src="../src/asset/icon/calendar.svg" alt="icon" />
+                    <img class="h-[400px]" id="flipImage" src="../src/asset/icon/calendar.svg" alt="icon" />
                 </div>
             </div>
         </div>
 
-        <div class="bg-primary rounded-[20px] h-[920px] items-end grid">
-            <form class="px-8 flex-col flex w-full" method="POST" action="login.php">
-                <div class="block">
-                    <h1 class="font-mont text-shade text-8xl font-medium tracking-[-14.4px]">Login</h1>
+        <div class="bg-primary rounded-[20px] h-[320px] flex items-center">
+            <form class="px-8 flex flex-col w-full" method="POST" action="login.php">
+                <div class="text-left">
+                    <h1 class="font-mont text-shade text-8xl font-medium tracking-[-1.4px]">Login</h1>
                 </div>
 
                 <?php if (!empty($error)): ?>
-                    <p class="text-red-500 mb-4 mt-2"><?= htmlspecialchars($error) ?></p>
+                    <p class="text-red-500 mb-4 mt-2 text-center"><?= htmlspecialchars($error) ?></p>
                 <?php endif; ?>
 
                 <div class="grid grid-cols-2 gap-x-[60px] gap-y-4 mt-4">
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="./signup.php" class="font-dm text-[16px] italic underline hover:decoration-amber-300 tracking-[-1.12px]">Create an account?</a>
                     </div>
                 </div>
-                <span class="flex px-[52px] justify-end pb-[52px]">
+                <span class="flex px-[52px] justify-end pb-[32px]">
                     <button type="submit" class="group bg-accent rounded-full h-20 w-20 flex items-center justify-center transition-transform duration-200 hover:scale-140">
                         <img src="../src/asset/icon/right-arrow.svg" alt="arrow" class="w-9 h-[46px]" />
                     </button>
