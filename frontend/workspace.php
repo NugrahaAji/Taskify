@@ -171,9 +171,11 @@ if ($user_workspace_id !== null) {
         </div>
     </nav>
 
-    <section class="bg-red-200">
-        
-    </section>
+    <div class="fixed bottom-10 right-[60px] z-10 hover:scale-120 ease-in-out transform transition-all duration-300">
+        <a href="add-task.php" class="">
+            <img src="../src/asset/icon/big-plus.svg" alt="add task">
+        </a>
+    </div>
 
     <main class="container mx-auto mt-[86px]">
         <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent mb-6">Your workspace</h1>
