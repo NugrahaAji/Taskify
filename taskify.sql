@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 21, 2025 at 08:04 AM
+-- Generation Time: Jun 22, 2025 at 04:39 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -73,7 +73,9 @@ CREATE TABLE `tasks` (
 
 INSERT INTO `tasks` (`id_task`, `id_user`, `task_name`, `category`, `deadline`, `subject`, `cover_color`, `status`, `description`, `created_at`) VALUES
 (1, 5, 'Adsi', 'Project', '2025-06-22 23:00:00', 'proyek akhir', '', 'in_progress', '', '2025-06-21 08:02:27'),
-(2, 5, 'Adsi', 'Project', '2025-06-22 15:02:00', 'proyek akhir', '', 'in_progress', '', '2025-06-21 08:02:46');
+(2, 5, 'Adsi', 'Project', '2025-06-22 00:00:00', 'proyek akhir', '#000000', 'pending', 'yea', '2025-06-21 08:02:46'),
+(3, 5, 'Web', 'Project', '2025-06-23 22:59:00', 'Proyek', 'from-bs to-be', 'in_progress', '123123', '2025-06-22 15:59:54'),
+(4, 5, 'Web', 'Excercise', '2025-06-23 23:00:00', 'proyek akhir', 'from-ps to-pe', 'completed', '12123123', '2025-06-22 16:00:09');
 
 -- --------------------------------------------------------
 
@@ -141,7 +143,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id_task` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_task` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
