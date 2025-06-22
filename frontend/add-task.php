@@ -11,7 +11,7 @@ $id_user = $_SESSION['id_user'];
 
 // Ambil data user
 $stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $id_user);
 $stmt->execute();
 $stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
 $stmt->fetch();
@@ -26,6 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $description = $_POST['description'] ?? '';
     $cover_color = $_POST['cover_color'] ?? ''; // Mengambil dari name="cover_color"
     $status = $_POST['status'] ?? 'pending'; // Mengambil dari name="status"
+
+    // Map status to ENUM values in DB
+    $status_map = [
+        'pending' => 'pending',
+        'In progress' => 'in_progress',
+        'completed' => 'completed'
+    ];
+    if (isset($status_map[$status])) {
+        $status = $status_map[$status];
+    } else {
+        $status = 'pending'; // default fallback
+    }
 
     // Pastikan nilai default jika tidak dipilih dari dropdown (misal dari JavaScript)
     if (empty($category)) $category = 'General'; // Default value jika dropdown tidak dipilih
@@ -73,39 +85,13 @@ $stmt->close();
     <link href="../src/style.css" rel="stylesheet" />
 </head>
 <body class="bg-primary">
-    <nav class="h-[100px] bg-accent">
-        <div class="container mx-auto flex justify-between">
-            <div class="h-[100px] flex items-center">
-                <img src="../src/asset/icon/logo-white.svg" alt="logo" />
-                <ul class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]">
-                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Dashboard</a></li>
-                    <li class="flex items-center border-b-4 border-primary"><a href="workspace.php">Workspace</a></li>
-                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="setting.php">Setting</a></li>
-                </ul>
-            </div>
-            <div class="flex items-center">
-                <ul class="flex gap-5 hh-[100px] items-center">
-                    <li><button class="flex items-center">
-                        <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
-                            <?php if (!empty($profile_picture)): ?>
-                                <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
-                            <?php else: ?>
-                                <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
-                            <?php endif; ?>
-                        </div>
-                    </button></li>
-                    <li><a href="setting.php"><img src="../src/asset/icon/setting.svg" alt="" /></a></li>
-                    <li><button class="flex items-center"><img src="../src/asset/icon/notif.svg" alt="" /></button></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<?php include 'header.php'; ?>
 
     <main class="container mx-auto mt-[86px]">
         <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent mb-6">Add new task</h1>
 
         <section class="mb-10">
-            <form method="POST" action="workspace.php" class="w-full ">
+<form method="POST" action="add-task.php" class="w-full ">
                 <div class="grid grid-cols-2 gap-x-10 space-y-4">
                     <input type="hidden" name="add_task" value="1" />
                     <div>
@@ -260,5 +246,6 @@ $stmt->close();
             }
         });
     </script>
+<?php include 'footer.php'; ?>
 </body>
 </html>

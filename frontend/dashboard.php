@@ -72,56 +72,7 @@ $task_count = count($tasks);
   </head>
   <body class="bg-primary">
     <!-- Navbar -->
-    <nav class="h-[100px] bg-accent">
-      <div class="container mx-auto flex justify-between">
-        <div class="h-[100px] flex items-center">
-          <img src="../src/asset/icon/logo-white.svg" alt="logo" />
-          <ul
-            class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]"
-          >
-            <li class="flex items-center border-b-4 border-primary">
-              <a href="Dashboard.php">Dashboard</a>
-            </li>
-            <li
-              class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"
-            >
-              <a href="workspace.php">Workspace</a>
-            </li>
-            <li
-              class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"
-            >
-              <a href="">Docs</a>
-            </li>
-          </ul>
-        </div>
-        <div class="flex items-center">
-          <ul class="flex gap-5 hh-[100px] items-center">
-            <li>
-              <button class="flex items-center">
-                <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
-                    <?php if (!empty($profile_picture)): ?>
-                        <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
-                    <?php else: ?>
-                        <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
-                    <?php endif; ?>
-                </div>
-
-              </button>
-            </li>
-            <li>
-              <a href="setting.php"
-                ><img src="../src/asset/icon/setting.svg" alt=""
-              /></a>
-            </li>
-            <li>
-              <button class="flex items-center">
-                <img src="../src/asset/icon/notif.svg" alt="" />
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<?php include 'header.php'; ?>
 
     <!-- Content -->
     <main class="container mx-auto mt-[86px] grid grid-cols-6 space-x-4">
@@ -267,7 +218,7 @@ $task_count = count($tasks);
         <!-- Task card -->
         <div class="grid grid-cols-5 gap-x-6 gap-y-[18px] mt-[18px]">
         <?php if (count($tasks) === 0): ?>
-            <p class="text-accent font-mont col-span-3">No tasks added yet.</p>
+            <p class="text-accent font-mont col-span-2">No tasks added yet.</p>
             <?php else: ?>
                 <?php foreach ($tasks as $task): ?>
                     <div class="rounded-[17px] border border-inactive">
@@ -278,12 +229,14 @@ $task_count = count($tasks);
                                     <div class="inline font-medium tracking-[-1.08px] text-[14px]">
                                         <?php echo htmlspecialchars($task['subject']); ?>
                                     </div>
-                                    <div class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
                                         <?php echo htmlspecialchars($task['category']); ?>
-                                    </div>
-                                    <div class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                    </span>
+                                    <span class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
                                         <?php echo htmlspecialchars($task['status']); ?>
-                                    </div>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -361,5 +314,6 @@ $task_count = count($tasks);
         window.addEventListener('resize', setGradientBoxAspectRatio);
     </script>
     </script>
+<?php include 'footer.php'; ?>
   </body>
 </html>
