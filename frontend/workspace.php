@@ -118,7 +118,7 @@ $stmt->close();
                 <ul class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]">
                     <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Dashboard</a></li>
                     <li class="flex items-center border-b-4 border-primary"><a href="workspace.php">Workspace</a></li>
-                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="setting.php">Setting</a></li>
+                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Dashboard</a></li>
                 </ul>
             </div>
             <div class="flex items-center">
