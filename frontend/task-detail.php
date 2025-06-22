@@ -15,15 +15,33 @@ if ($task_id === null) {
     exit();
 }
 
-// Ambil data user
-$stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
-$stmt->fetch();
-$stmt->close();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle form submission to update task
+    $task_name = $_POST['task_name'] ?? '';
+    $category = $_POST['category'] ?? '';
+    $deadline = $_POST['deadline'] ?? '';
+    $subject = $_POST['subject'] ?? '';
+    $description = $_POST['description'] ?? '';
+    $cover_color = $_POST['cover_color'] ?? '';
+    $status = $_POST['status'] ?? '';
 
-// Prepare and execute query to fetch task details for the logged-in user
+    // Basic validation (can be extended)
+    if (empty($task_name) || empty($category) || empty($deadline) || empty($subject) || empty($status)) {
+        $error_message = "Please fill in all required fields.";
+    } else {
+        $stmt = $conn->prepare("UPDATE tasks SET task_name = ?, category = ?, deadline = ?, subject = ?, description = ?, cover_color = ?, status = ? WHERE id_task = ? AND id_user = ?");
+        $stmt->bind_param("sssssssii", $task_name, $category, $deadline, $subject, $description, $cover_color, $status, $task_id, $id_user);
+        if ($stmt->execute()) {
+            header("Location: dashboard.php?update=success");
+            exit();
+        } else {
+            $error_message = "Failed to update task. Please try again.";
+        }
+        $stmt->close();
+    }
+}
+
+// Fetch task details for the logged-in user
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE id_task = ? AND id_user = ?");
 $stmt->bind_param("ii", $task_id, $id_user);
 $stmt->execute();
@@ -50,22 +68,71 @@ $stmt->close();
 <body class="bg-primary">
 <?php include 'header.php'; ?>
 
-    <main class="container mx-auto mt-[86px] max-w-3xl bg-white p-6 rounded shadow">
-        <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent mb-6">Task Detail</h1>
+<main class="container mx-auto mt-[86px] max-w-3xl bg-white p-6 rounded shadow">
+    <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent mb-6">Task Detail</h1>
 
+    <?php if (!empty($error_message)): ?>
+        <div class="mb-4 p-3 bg-red-200 text-red-800 rounded"><?php echo htmlspecialchars($error_message); ?></div>
+    <?php endif; ?>
+
+    <form method="POST" action="task-detail.php?id=<?php echo htmlspecialchars($task_id); ?>">
         <div class="mb-4">
-            <h2 class="font-mont font-semibold text-xl mb-2"><?php echo htmlspecialchars($task['task_name']); ?></h2>
-            <p><strong>Category:</strong> <?php echo htmlspecialchars($task['category']); ?></p>
-            <p><strong>Deadline:</strong> <?php echo htmlspecialchars($task['deadline']); ?></p>
-            <p><strong>Subject:</strong> <?php echo htmlspecialchars($task['subject']); ?></p>
-            <p><strong>Description:</strong></p>
-            <p class="whitespace-pre-wrap border p-3 rounded bg-gray-100"><?php echo htmlspecialchars($task['description']); ?></p>
-            <p><strong>Cover Color:</strong> <?php echo htmlspecialchars($task['cover_color']); ?></p>
-            <p><strong>Status:</strong> <?php echo htmlspecialchars($task['status']); ?></p>
+            <label for="task_name" class="block font-semibold mb-1">Task Name</label>
+            <input type="text" id="task_name" name="task_name" value="<?php echo htmlspecialchars($task['task_name']); ?>" required class="w-full border rounded p-2" />
         </div>
 
-        <a href="dashboard.php" class="inline-block bg-accent text-primary px-4 py-2 rounded font-semibold hover:bg-shade transition">Back to Dashboard</a>
-    </main>
+        <div class="mb-4">
+            <label for="category" class="block font-semibold mb-1">Category</label>
+            <select id="category" name="category" required class="w-full border rounded p-2">
+                <?php
+                $categories = ['Exam', 'Excercise', 'Presentation', 'Project'];
+                foreach ($categories as $cat) {
+                    $selected = ($task['category'] === $cat) ? 'selected' : '';
+                    echo "<option value=\"" . htmlspecialchars($cat) . "\" $selected>" . htmlspecialchars($cat) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="deadline" class="block font-semibold mb-1">Deadline</label>
+            <input type="datetime-local" id="deadline" name="deadline" value="<?php echo date('Y-m-d\TH:i', strtotime($task['deadline'])); ?>" required class="w-full border rounded p-2" />
+        </div>
+
+        <div class="mb-4">
+            <label for="subject" class="block font-semibold mb-1">Subject</label>
+            <input type="text" id="subject" name="subject" value="<?php echo htmlspecialchars($task['subject']); ?>" required class="w-full border rounded p-2" />
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block font-semibold mb-1">Description</label>
+            <textarea id="description" name="description" class="w-full border rounded p-2" rows="4"><?php echo htmlspecialchars($task['description']); ?></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="cover_color" class="block font-semibold mb-1">Cover Color</label>
+            <input type="text" id="cover_color" name="cover_color" value="<?php echo htmlspecialchars($task['cover_color']); ?>" class="w-full border rounded p-2" />
+        </div>
+
+        <div class="mb-4">
+            <label for="status" class="block font-semibold mb-1">Status</label>
+            <select id="status" name="status" required class="w-full border rounded p-2">
+                <?php
+                $statuses = ['pending' => 'Pending', 'in_progress' => 'In Progress', 'completed' => 'Completed'];
+                foreach ($statuses as $value => $label) {
+                    $selected = ($task['status'] === $value) ? 'selected' : '';
+                    echo "<option value=\"" . htmlspecialchars($value) . "\" $selected>" . htmlspecialchars($label) . "</option>";
+                }
+                ?>
+            </select>
+        </div>
+
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-accent text-primary px-4 py-2 rounded font-semibold hover:bg-shade transition">Save</button>
+            <a href="dashboard.php" class="inline-block bg-gray-300 text-gray-700 px-4 py-2 rounded font-semibold hover:bg-gray-400 transition">Back to Dashboard</a>
+        </div>
+    </form>
+</main>
 <?php include 'footer.php'; ?>
 </body>
 </html>

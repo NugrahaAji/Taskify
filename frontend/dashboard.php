@@ -245,9 +245,9 @@ $task_count = count($tasks);
                                 <span class="text-inactive text-[12px] font-normal tracking-[-0.84px]">Deadline</span>
                                 <p class="text-accent font-mont text-[16px] font-medium tracking-[-1.12px] leading-[0.9]"><?php echo htmlspecialchars(date('D, j F H:i', strtotime($task['deadline']))); ?></p>
                             </div>
-                            <a href="" class="bg-accent text-primary h-[33px] w-[83px] rounded-full font-normal tracking-[-1px] text-center pt-1">
-                                Detail
-                            </a>
+                              <a href="task-detail.php?id=<?php echo htmlspecialchars($task['id_task']); ?>" class="bg-accent text-primary h-[33px] w-[83px] rounded-full font-normal tracking-[-1px] text-center pt-1">
+                                  Detail
+                              </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
