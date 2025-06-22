@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </head>
   <body class="bg-accent">
     <div class="container mx-auto grow grid grid-cols-2 my-14">
-        <div class="flex flex-col h-[920px]">
+        <div class="flex flex-col h-full flex-grow">
             <div>
                 <img src="../src/asset/icon/logo-white.svg" alt="logo" />
             </div>
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <div class="bg-primary rounded-[20px] h-[320px] flex items-center">
+        <div class="bg-primary rounded-[20px] h-full flex items-center">
             <form class="px-8 flex flex-col w-full" method="POST" action="login.php">
                 <div class="text-left">
                     <h1 class="font-mont text-shade text-8xl font-medium tracking-[-1.4px]">Login</h1>

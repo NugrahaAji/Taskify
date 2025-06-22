@@ -9,6 +9,14 @@ include '../backend/db.php'; // Pastikan path ini benar
 
 $id_user = $_SESSION['id_user'];
 
+// Ambil data user
+$stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
+$stmt->fetch();
+$stmt->close();
+
 // Handle adding new task
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $task_name = $_POST['task_name'] ?? '';
@@ -28,57 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $stmt = $conn->prepare("INSERT INTO tasks (id_user, task_name, category, deadline, subject, description, cover_color, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("isssssss", $id_user, $task_name, $category, $deadline, $subject, $description, $cover_color, $status);
     $stmt->execute();
-    $stmt->close();
-}
-
-// Handle adding collaborator
-$collab_message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_collaborator'])) {
-    $collab_email = $_POST['collab_email'] ?? '';
-
-    // Find user by email
-    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $collab_email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows === 1) {
-        $collab_user = $result->fetch_assoc();
-        $collab_user_id = $collab_user['id'];
-
-        // For simplicity, create a workspace entry linking current user and collaborator
-        // Assuming workspace table has id_workspace (auto increment), id_user, id_task, nama_workspace
-        // Here we create a workspace named "Default Workspace" if not exists and add collaborator
-
-        // Check if workspace exists for user
-        $stmt = $conn->prepare("SELECT id_workspace FROM workspace WHERE id_user = ? LIMIT 1");
-        $stmt->bind_param("i", $id_user);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 0) {
-            // For now, do not create workspace to avoid id_task error
-            // User must have workspace created elsewhere or manually
-            $workspace_id = null;
-        } else {
-            $workspace = $result->fetch_assoc();
-            $workspace_id = $workspace['id_workspace'];
-        }
-
-        if ($workspace_id !== null) {
-            // Add collaborator to collaborators table
-            $stmt = $conn->prepare("INSERT INTO collaborators (id_workspace, id_user) VALUES (?, ?)");
-            $stmt->bind_param("ii", $workspace_id, $collab_user_id);
-            if ($stmt->execute()) {
-                $collab_message = "Collaborator added successfully.";
-            } else {
-                $collab_message = "Failed to add collaborator or already exists.";
-            }
-            $stmt->close();
-        } else {
-            $collab_message = "No workspace found for user. Cannot add collaborator.";
-        }
-    } else {
-        $collab_message = "User with that email not found.";
-    }
     $stmt->close();
 }
 
@@ -128,7 +85,15 @@ $stmt->close();
             </div>
             <div class="flex items-center">
                 <ul class="flex gap-5 hh-[100px] items-center">
-                    <li><button class="flex items-center"><img src="../src/asset/icon/profile.svg" alt="" /></button></li>
+                    <li><button class="flex items-center">
+                        <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
+                            <?php if (!empty($profile_picture)): ?>
+                                <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php else: ?>
+                                <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php endif; ?>
+                        </div>
+                    </button></li>
                     <li><a href="setting.php"><img src="../src/asset/icon/setting.svg" alt="" /></a></li>
                     <li><button class="flex items-center"><img src="../src/asset/icon/notif.svg" alt="" /></button></li>
                 </ul>
@@ -190,7 +155,7 @@ $stmt->close();
 
                                 <ul id="statusSelectDropdown" class="absolute left-0 z-10 w-full mt-1 rounded-md shadow-lg hidden max-h-60 overflow-y-auto text-[16px] tracking-[-1.12px] font-mont font-normal text-primary bg-accent">
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('status', 'pending')">Pending</li>
-                                    <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('status', 'in progress')">In progress</li>
+                                    <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('status', 'In progress')">In progress</li>
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('status', 'completed')">Completed</li>
                                 </ul>
 
@@ -209,7 +174,7 @@ $stmt->close();
 
                                 <ul id="coverColorSelectDropdown" class="absolute left-0 z-10 w-full mt-1 rounded-md shadow-lg hidden max-h-60 overflow-y-auto text-[16px] tracking-[-1.12px] font-mont font-normal text-primary bg-accent">
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Blue', 'from-bs to-be')">Blue</li>
-                                    <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Gray', 'from-grs to-gre')">Gray</li>
+                                    <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Gray', 'from-grs to-gre')">Grey</li>
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Purple', 'from-ps to-pe')">Purple</li>
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Orange', 'from-os to-oe')">Orange</li>
                                     <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('coverColor', 'Green', 'from-gs to-ge')">Green</li>

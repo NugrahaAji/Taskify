@@ -15,6 +15,14 @@ if ($task_id === null) {
     exit();
 }
 
+// Ambil data user
+$stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
+$stmt->fetch();
+$stmt->close();
+
 // Prepare and execute query to fetch task details for the logged-in user
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE id_task = ? AND id_user = ?");
 $stmt->bind_param("ii", $task_id, $id_user);
@@ -47,12 +55,20 @@ $stmt->close();
                 <ul class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]">
                     <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Dashboard</a></li>
                     <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="workspace.php">Workspace</a></li>
-                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Dashboard</a></li>
+                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="dashboard.php">Docs</a></li>
                 </ul>
             </div>
             <div class="flex items-center">
                 <ul class="flex gap-5 hh-[100px] items-center">
-                    <li><button class="flex items-center"><img src="../src/asset/icon/profile.svg" alt="" /></button></li>
+                    <li><button class="flex items-center">
+                        <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
+                            <?php if (!empty($profile_picture)): ?>
+                                <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php else: ?>
+                                <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php endif; ?>
+                        </div>
+                    </button></li>
                     <li><a href="setting.php"><img src="../src/asset/icon/setting.svg" alt="" /></a></li>
                     <li><button class="flex items-center"><img src="../src/asset/icon/notif.svg" alt="" /></button></li>
                 </ul>

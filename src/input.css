@@ -8,6 +8,18 @@
   --color-shade: #111111;
   --color-inactive: #979797;
   --color-warn: #dd0000;
+    --color-ps:#E2DBFA;
+    --color-pis:#FFD7EF;
+    --color-gs:#BAFFD9;
+    --color-grs:#EAEAEA;
+    --color-os:#FFE1CC;
+    --color-bs:#CCEAFF;
+    --color-pe:#F6F5F9;
+    --color-pie:#FBEEF5;
+    --color-ge:#D9FCE9;
+    --color-gre:#F1F1F1;
+    --color-oe:#FCEDE2;
+    --color-be:#ECF4FB;
 }
 @layer utilities {
     .container {
@@ -50,12 +62,24 @@
   transition: transform 0.5s ease-in-out;
   transform-style: preserve-3d;
 }
-.hide-scrollbar {
-  overflow: auto;
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* Internet Explorer 10+ */
+/* width */
+::-webkit-scrollbar {
+  width: 2px;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari, Opera */
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px white;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #020202;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: none;
 }

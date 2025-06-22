@@ -107,214 +107,244 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="../src/asset/icon/Taskify.ico" type="image/x-icon">
     <link
-      href="../src/style.css"
-      rel="stylesheet"
+        href="../src/style.css"
+        rel="stylesheet"
     />
     <title>Taskify | Edit Profile</title>
-  </head>
-  <body class="bg-primary scrollbar">
-        <nav class="h-[100px] bg-accent">
-            <div class="container mx-auto flex justify-between">
-                <div class="h-[100px] flex items-center">
-                    <img src="../src/asset/icon/logo-white.svg" alt="logo">
-                    <ul class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]">
-                        <li class="flex items-center border-b-4 hover:border-shade border-accent"><a href="Dashboard.php">Dashboard</a></li>
-                        <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="">Workspace</a></li>
-                        <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="">Dashboard</a></li>
-                    </ul>
-                </div>
-                <div class="flex items-center">
-                    <ul class="flex gap-5 hh-[100px] items-center">
-                        <li><button class="flex items-center"><img src="../src/asset/icon/profile.svg" alt=""></button></li>
-                        <li><a href="setting.php"><img src="../src/asset/icon/setting-white.svg" alt=""></a></li>
-                        <li><button class="flex items-center"><img src="../src/asset/icon/notif.svg" alt=""></button></li>
-                    </ul>
-                </div>
+</head>
+<body class="bg-primary scrollbar">
+    <nav class="h-[100px] bg-accent">
+        <div class="container mx-auto flex justify-between">
+            <div class="h-[100px] flex items-center">
+                <img src="../src/asset/icon/logo-white.svg" alt="logo">
+                <ul class="ml-[152px] flex font-mont text-[18px] font-light tracking-[-1px] text-primary gap-9 h-[100px]">
+                    <li class="flex items-center border-b-4 hover:border-shade border-accent"><a href="Dashboard.php">Dashboard</a></li>
+                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="">Workspace</a></li>
+                    <li class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"><a href="">Docs</a></li>
+                </ul>
             </div>
-        </nav>
-        <div>
-            <?php if (!empty($cover_picture) && $cover_picture !== ''): ?>
-                <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="w-full max-h-48 object-cover rounded-lg" />
-            <?php else: ?>
-                <img src="../src/asset/img/gradient.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover rounded-lg" />
-            <?php endif; ?>
-        </div>
-        <div class="max-w-[1120px] mx-auto">
-            <form method="POST" action="">
-                <div class="w-full space-x-6 flex -mt-[57px] ">
-                    <div class="flex flex-row ">
-                        <div>
-                            <img src="../src/asset/img/profile.svg" alt="">
+            <div class="flex items-center">
+                <ul class="flex gap-5 hh-[100px] items-center">
+                    <li><button class="flex items-center">
+                        <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
+                            <?php if (!empty($profile_picture)): ?>
+                                <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php else: ?>
+                                <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                            <?php endif; ?>
                         </div>
+
+                    </button></li>
+                    <li><a href="setting.php"><img src="../src/asset/icon/setting-white.svg" alt=""></a></li>
+                    <li><button class="flex items-center"><img src="../src/asset/icon/notif.svg" alt=""></button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div>
+        <?php if (!empty($cover_picture) && $cover_picture !== ''): ?>
+            <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="w-full max-h-48 object-cover" />
+        <?php else: ?>
+            <img src="../src/asset/img/gradient-1.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover" />
+        <?php endif; ?>
+    </div>
+    <div class="max-w-[1120px] mx-auto">
+        <form method="POST" action="" enctype="multipart/form-data">
+            <div class="w-full space-x-6 flex -mt-[57px] ">
+                <div class="flex flex-row ">
+                    <div>
+                        <?php if (!empty($profile_picture)): ?>
+                            <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[162px]" />
+                        <?php else: ?>
+                            <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[162px]" />
+                        <?php endif; ?>
                     </div>
-                    <div class="flex mt-[52px] w-full justify-between items-center">
-                        <div class="">
+                </div>
+                <div class="flex mt-[52px] w-full justify-between items-center">
+                    <div class="">
                         <h1 class="font-mont text-[32px] font-semibold tracking-[-2.88px] text-accent"><?= htmlspecialchars($username ?? '') ?></h1>
                         <h1 class="font-mont text-[16px] font-normal tracking-[-1.28px] text-inactive -mt-2"><?= htmlspecialchars($email ?? '') ?></h1>
-                        </div>
                     </div>
                 </div>
-                <div class="mt-12">
-                    <div class="justify-between flex items-center">
-                        <h1 class="font-mont text-2xl text-accent font-semibold tracking-[-1.92px]">Edit account info</h1>
-                        <a href="setting.php" class="cursor-pointer hover:bg-slate-200 rounded-full">
-                            <img src="../src/asset/icon/cancel.svg" alt="cancel">
-                        </a>
-                    </div>
+            </div>
+            <div class="mt-12">
+                <div class="justify-between flex items-center">
+                    <h1 class="font-mont text-2xl text-accent font-semibold tracking-[-1.92px]">Edit account info</h1>
+                    <a href="setting.php" class="cursor-pointer hover:bg-slate-200 rounded-full">
+                        <img src="../src/asset/icon/cancel.svg" alt="cancel">
+                    </a>
+                </div>
                 <div class="grid grid-cols-2 gap-x-[60px] gap-y-[18px] mt-4 pb-[42px]">
                     <div>
                         <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Username</label>
                         <input
-                          type="text"
-                          name="username"
-                          value="<?= htmlspecialchars($username ?? '') ?>"
-                          class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]"
-                          required
+                            type="text"
+                            name="username"
+                            value="<?= htmlspecialchars($username ?? '') ?>"
+                            class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]"
+                            required
                         />
                     </div>
                     <div>
                         <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Bio</label>
                         <input
-                          type="text"
-                          name="bio"
-                          value="<?= htmlspecialchars($bio ?? '') ?>"
-                          class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]"
+                            type="text"
+                            name="bio"
+                            value="<?= htmlspecialchars($bio ?? '') ?>"
+                            class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]"
                         />
                     </div>
                     <div>
                         <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Email</label>
                         <input
-                          type="email"
-                          name="email"
-                          value="<?= htmlspecialchars($email ?? '') ?>"
-                          class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]"
-                          required
+                            type="email"
+                            name="email"
+                            value="<?= htmlspecialchars($email ?? '') ?>"
+                            class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]"
+                            required
                         />
                     </div>
                     <div>
                         <label class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-[300px]">Password</label>
                         <input
-                          type="password"
-                          name="password"
-                          placeholder="Leave blank to keep current password"
-                          class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]"
+                            type="password"
+                            name="password"
+                            placeholder="Leave blank to keep current password"
+                            class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]"
                         />
                     </div>
                     <div>
                         <label
-                          class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-light"
+                            class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-light"
                         >
-                          Profile picture
+                            Profile picture
                         </label>
                         <input
-                          type="file"
-                          name="profile_picture_file"
-                          accept="image/*"
-                          class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]"
+                            type="file"
+                            name="profile_picture_file"
+                            accept="image/*"
+                            class="w-full border-b border-black outline-none focus:ring-0 h-8 text-[18px]"
                         />
                         <?php if (!empty($profile_picture)): ?>
-                          <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="max-h-24 mt-2" />
+                            <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="max-h-24 mt-2" />
                         <?php endif; ?>
-                      </div>
-                      <div>
+                    </div>
+                    <div>
                         <label
-                          class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-light"
+                            class="block font-dm text-[18px] text-shade tracking-[-1.26px] mb-1 font-light"
                         >
-                          Cover picture template
+                            Cover picture template
                         </label>
-                        <select name="cover_picture_template" class="w-full border-b border-black outline-none focus:ring-0 h-8  text-[18px]">
-                          <option value="" <?= empty($cover_picture) ? 'selected' : '' ?>>Default</option>
-                          <option value="gradient-2.png" <?= $cover_picture === 'gradient-2.png' ? 'selected' : '' ?>>Gradient 2</option>
-                          <option value="gradient-3.png" <?= $cover_picture === 'gradient-3.png' ? 'selected' : '' ?>>Gradient 3</option>
-                          <option value="gradient-4.png" <?= $cover_picture === 'gradient-4.png' ? 'selected' : '' ?>>Gradient 4</option>
-                          <option value="gradient-5.png" <?= $cover_picture === 'gradient-5.png' ? 'selected' : '' ?>>Gradient 5</option>
-                        </select>
-                        <?php if (!empty($cover_picture) && $cover_picture !== ''): ?>
-                          <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="max-h-24 mt-2" />
-                        <?php endif; ?>
-                      </div>
+                        <div class="relative inline-block text-left w-full">
+                            <div class="relative w-full">
+                                <div id="customSelectButton"
+                                    onclick="toggleCustomSelect()"
+                                    class="w-full h-20 rounded-md overflow-hidden cursor-pointer relative">
+                                    <img id="customSelectPreview"
+                                        src="../src/asset/img/gradient-1.png"
+                                        alt="Selected"
+                                        class="w-full h-full object-cover" />
+                                </div>
+
+                                <ul id="customSelectDropdown"
+                                    class="absolute left-0 z-10 w-full mt-1 rounded-md shadow-lg hidden max-h-48 overflow-y-scroll bg-accent p-2 space-y-2 hide-scrollbar">
+                                    <li onclick="selectOption('gradient-1.png')"
+                                        class="cursor-pointer hover:opacity-80 rounded overflow-hidden">
+                                        <img src="../src/asset/img/gradient-1.png" class="w-full h-20 object-cover" alt="gradient 1" />
+                                    </li>
+                                    <li onclick="selectOption('gradient-2.png')"
+                                        class="cursor-pointer hover:opacity-80 rounded overflow-hidden">
+                                        <img src="../src/asset/img/gradient-2.png" class="w-full h-20 object-cover" alt="gradient 2" />
+                                    </li>
+                                    <li onclick="selectOption('gradient-3.png')"
+                                        class="cursor-pointer hover:opacity-80 rounded overflow-hidden">
+                                        <img src="../src/asset/img/gradient-3.png" class="w-full h-20 object-cover" alt="gradient 3" />
+                                    </li>
+                                    <li onclick="selectOption('gradient-4.png')"
+                                        class="cursor-pointer hover:opacity-80 rounded overflow-hidden">
+                                        <img src="../src/asset/img/gradient-4.png" class="w-full h-20 object-cover" alt="gradient 4" />
+                                    </li>
+                                    <li onclick="selectOption('gradient-5.png')"
+                                        class="cursor-pointer hover:opacity-80 rounded overflow-hidden">
+                                        <img src="../src/asset/img/gradient-5.png" class="w-full h-20 object-cover" alt="gradient 5" />
+                                    </li>
+                                </ul>
+
+                                <input type="hidden" id="customSelectInput" name="cover_picture_template" value="<?= htmlspecialchars($cover_picture ?? 'gradient-1.png') ?>" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <span class="flex justify-end">
                     <button type="submit" class="group bg-accent rounded-full h-20 w-20 flex items-center justify-center transition-transform duration-200 hover:scale-140">
                         <img src="../src/asset/icon/right-arrow.svg" alt="arrow" class="w-9 h-[46px]" />
                     </button>
                 </span>
-                </div>
-            </form>
-        </div>
+            </div>
+        </form>
+    </div>
 
-        <script>
-            const uploadInput = document.getElementById('upload');
-            const filenameLabel = document.getElementById('filename');
-            const imagePreview = document.getElementById('image-preview');
+    <script>
+        const uploadInput = document.querySelector('input[name="profile_picture_file"]');
+        const filenameLabel = document.getElementById('filename'); // This ID doesn't exist in your HTML, consider removing or adding
+        const imagePreview = document.getElementById('image-preview'); // This ID doesn't exist in your HTML, consider removing or adding
 
-            // Check if the event listener has been added before
-            let isEventListenerAdded = false;
-
-            uploadInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-
-                if (file) {
-                filenameLabel.textContent = file.name;
-
+        // Function to update the profile picture preview
+        function updateProfilePicturePreview(file) {
+            const profilePicElement = document.querySelector('img[alt="Profile Picture"]');
+            if (file && profilePicElement) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    imagePreview.innerHTML =
-                    `<img src="${e.target.result}" class="max-h-48 rounded-lg mx-auto" alt="Image preview" />`;
-                    // Add event listener for image preview only once
-                    if (!isEventListenerAdded) {
-                    imagePreview.addEventListener('click', () => {
-                        uploadInput.click();
-                    });
-
-                    isEventListenerAdded = true;
-                    }
+                    profilePicElement.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
-                } else {
-                filenameLabel.textContent = '';
-                imagePreview.innerHTML =
-                    `<img class="h-full" src="../src/asset/img/profile.svg" alt="gradient">`;
-
-                // Remove the event listener when there's no image
-                imagePreview.removeEventListener('click', () => {
-                    uploadInput.click();
-                });
-
-                isEventListenerAdded = false;
-                }
-            });
-
-            uploadInput.addEventListener('click', (event) => {
-                event.stopPropagation();
-            });
-
-            const selectButton = document.getElementById("customSelectButton");
-            const dropdown = document.getElementById("customSelectDropdown");
-            const previewImage = document.getElementById("customSelectPreview");
-            const hiddenInput = document.getElementById("customSelectInput");
-
-            function toggleCustomSelect() {
-                dropdown.classList.toggle("hidden");
             }
+        }
 
-            function selectOption(imageSrc) {
-                previewImage.src = imageSrc;
-                hiddenInput.value = imageSrc;
+        // Event listener for profile picture file input change
+        if (uploadInput) {
+            uploadInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                updateProfilePicturePreview(file);
+            });
+        }
+
+        const selectButton = document.getElementById("customSelectButton");
+        const dropdown = document.getElementById("customSelectDropdown");
+        const previewImage = document.getElementById("customSelectPreview");
+        const hiddenInput = document.getElementById("customSelectInput");
+
+        // Initialize the preview image based on the current cover_picture value
+        document.addEventListener('DOMContentLoaded', () => {
+            if (hiddenInput.value && hiddenInput.value !== 'null') { // Check if a value exists and is not 'null'
+                previewImage.src = `../src/asset/img/${hiddenInput.value.split('/').pop()}`; // Extract filename from path
+            } else {
+                previewImage.src = '../src/asset/img/gradient-1.png'; // Default if null or empty
+            }
+        });
+
+
+        function toggleCustomSelect() {
+            dropdown.classList.toggle("hidden");
+        }
+
+        function selectOption(imageName) {
+            previewImage.src = `../src/asset/img/${imageName}`;
+            hiddenInput.value = imageName;
+            dropdown.classList.add("hidden");
+        }
+
+        // Close dropdown if clicked outside
+        document.addEventListener("click", function (event) {
+            if (selectButton && dropdown && !selectButton.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.classList.add("hidden");
             }
-
-            // Close dropdown if clicked outside
-            document.addEventListener("click", function (event) {
-                if (!selectButton.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.add("hidden");
-                }
-            });
-        </script>
-  </body>
+        });
+    </script>
+</body>
 </html>

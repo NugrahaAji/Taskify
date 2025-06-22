@@ -10,6 +10,14 @@ include '../backend/db.php';
 
 $id_user = $_SESSION['id_user'];
 
+// Ambil data user
+$stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
+$stmt->fetch();
+$stmt->close();
+
 // Handle filters and sorting from GET parameters
 $filter_categories = isset($_GET['category']) ? $_GET['category'] : [];
 $sort_option = isset($_GET['sort']) ? $_GET['sort'] : '';
@@ -82,7 +90,7 @@ $task_count = count($tasks);
             <li
               class="flex items-center border-b-4 border-accent hover:border-shade transition-all duration-300"
             >
-              <a href="">Dashboard</a>
+              <a href="">Docs</a>
             </li>
           </ul>
         </div>
@@ -90,7 +98,14 @@ $task_count = count($tasks);
           <ul class="flex gap-5 hh-[100px] items-center">
             <li>
               <button class="flex items-center">
-                <img src="../src/asset/icon/profile.svg" alt="" />
+                <div class="h-[48px] w-[48px] rounded-full overflow-hidden">
+                    <?php if (!empty($profile_picture)): ?>
+                        <img src="../<?= htmlspecialchars($profile_picture) ?>" alt="Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                    <?php else: ?>
+                        <img src="../src/asset/img/profile.svg" alt="Default Profile Picture" class="h-[48px] w-[48px] object-cover" />
+                    <?php endif; ?>
+                </div>
+
               </button>
             </li>
             <li>
@@ -112,7 +127,7 @@ $task_count = count($tasks);
     <main class="container mx-auto mt-[86px] grid grid-cols-6 space-x-4">
       <!-- Filter & Filler -->
       <div class="">
-        <img src="../src/asset/icon/iklan.svg" alt="" />
+        <img src="../src/asset/img/docs.svg" alt="" class="w-full"/>
         <div class="mt-6 space-y-[18px]">
           <form method="GET" action="dashboard.php">
             <button
@@ -251,28 +266,39 @@ $task_count = count($tasks);
 
         <!-- Task card -->
         <div class="grid grid-cols-5 gap-x-6 gap-y-[18px] mt-[18px]">
-          <?php
-          if ($task_count === 0) {
-              echo '<p class="text-accent font-mont text-[16px]">No tasks found.</p>';
-          } else {
-              foreach ($tasks as $task) {
-                  $deadline = date('l, j F H:i', strtotime($task['deadline']));
-                  $cover_color = htmlspecialchars($task['cover_color']) ?: 'from-gray-200 to-gray-100';
-                  $task_name = htmlspecialchars($task['task_name']);
-                  $task_id = (int)$task['id_task'];
-                  echo '<div class="h-[312px] rounded-[17px] border border-inactive">';
-                  echo '<div class="h-3/4 bg-gradient-to-t ' . $cover_color . ' m-[6px] rounded-[12px]"></div>';
-                  echo '<div class="mx-4 py-2 flex justify-between items-center">';
-                  echo '<div class="flex flex-col items-start justify-center">';
-                  echo '<span class="text-inactive text-[12px] font-normal tracking-[-0.84px]">Deadline</span>';
-                  echo '<p class="text-accent font-mont text-[16px] font-medium tracking-[-1.12px] leading-[0.9]">' . $deadline . '</p>';
-                  echo '</div>';
-                  echo '<a href="task-detail.php?id=' . $task_id . '" class="bg-accent text-primary h-[33px] w-[83px] rounded-full font-normal tracking-[-1px] flex items-center justify-center no-underline">Detail</a>';
-                  echo '</div>';
-                  echo '</div>';
-              }
-          }
-          ?>
+        <?php if (count($tasks) === 0): ?>
+            <p class="text-accent font-mont col-span-3">No tasks added yet.</p>
+            <?php else: ?>
+                <?php foreach ($tasks as $task): ?>
+                    <div class="rounded-[17px] border border-inactive">
+                        <div class="gradient-box bg-gradient-to-t <?php echo htmlspecialchars($task['cover_color']); ?> m-[6px] rounded-[12px] flex items-end">
+                            <div class="mx-4 mb-6">
+                                <h2 class="font-mont font-semibold text-xl mb-2 tracking-[-1.12px] leading-5"><?php echo htmlspecialchars($task['task_name']); ?></h2>
+                                <div class="flex items-center space-x-2">
+                                    <div class="inline font-medium tracking-[-1.08px] text-[14px]">
+                                        <?php echo htmlspecialchars($task['subject']); ?>
+                                    </div>
+                                    <div class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                        <?php echo htmlspecialchars($task['category']); ?>
+                                    </div>
+                                    <div class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                        <?php echo htmlspecialchars($task['status']); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mx-4 py-2 flex justify-between items-center p">
+                            <div class="flex flex-col items-start justify-center">
+                                <span class="text-inactive text-[12px] font-normal tracking-[-0.84px]">Deadline</span>
+                                <p class="text-accent font-mont text-[16px] font-medium tracking-[-1.12px] leading-[0.9]"><?php echo htmlspecialchars(date('D, j F H:i', strtotime($task['deadline']))); ?></p>
+                            </div>
+                            <a href="" class="bg-accent text-primary h-[33px] w-[83px] rounded-full font-normal tracking-[-1px] text-center pt-1">
+                                Detail
+                            </a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
       </div>
     </main>
@@ -322,6 +348,18 @@ $task_count = count($tasks);
           document.getElementById('selectArrow').classList.remove('rotate-180');
         }
       });
+              function setGradientBoxAspectRatio() {
+            const gradientBoxes = document.querySelectorAll('.gradient-box');
+            gradientBoxes.forEach(box => {
+                const width = box.clientWidth;
+                const height = (width * 4) / 5; // Adjusted to 4/5 as per previous discussion
+                box.style.height = `${height}px`;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', setGradientBoxAspectRatio);
+        window.addEventListener('resize', setGradientBoxAspectRatio);
+    </script>
     </script>
   </body>
 </html>
