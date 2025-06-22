@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 21, 2025 at 07:09 AM
+-- Generation Time: Jun 21, 2025 at 08:04 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -67,6 +67,14 @@ CREATE TABLE `tasks` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tasks`
+--
+
+INSERT INTO `tasks` (`id_task`, `id_user`, `task_name`, `category`, `deadline`, `subject`, `cover_color`, `status`, `description`, `created_at`) VALUES
+(1, 5, 'Adsi', 'Project', '2025-06-22 23:00:00', 'proyek akhir', '', 'in_progress', '', '2025-06-21 08:02:27'),
+(2, 5, 'Adsi', 'Project', '2025-06-22 15:02:00', 'proyek akhir', '', 'in_progress', '', '2025-06-21 08:02:46');
+
 -- --------------------------------------------------------
 
 --
@@ -114,6 +122,12 @@ CREATE TABLE `workspace` (
 --
 
 --
+-- Indexes for table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD PRIMARY KEY (`id_task`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -122,6 +136,12 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `tasks`
+--
+ALTER TABLE `tasks`
+  MODIFY `id_task` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="./signup.php" class="font-dm text-[16px] italic underline hover:decoration-amber-300 tracking-[-1.12px]">Create an account?</a>
                     </div>
                 </div>
-                <span class="flex px-[52px] justify-end pb-[32px]">
+                <span class="flex px-5 justify-end pb-[32px]">
                     <button type="submit" class="group bg-accent rounded-full h-20 w-20 flex items-center justify-center transition-transform duration-200 hover:scale-140">
                         <img src="../src/asset/icon/right-arrow.svg" alt="arrow" class="w-9 h-[46px]" />
                     </button>
