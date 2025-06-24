@@ -1,8 +1,7 @@
-
 <?php
 session_start();
 if (!isset($_SESSION['id_user'])) {
-    header("Location: login.php"); // Gagal akses kalau belum login
+    header("Location: login.php");
     exit();
 }
 
@@ -12,28 +11,21 @@ $id_user = $_SESSION['id_user'];
 
 // Ambil data user
 $stmt = $conn->prepare("SELECT username, email, bio, profile_picture, cover_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param("i", $id_user);
 $stmt->execute();
 $stmt->bind_result($username, $email, $bio, $profile_picture, $cover_picture);
 $stmt->fetch();
 $stmt->close();
 
-// Handle filters and sorting from GET parameters
 $filter_categories = isset($_GET['category']) ? $_GET['category'] : [];
+
+$filter_statuses = isset($_GET['status']) ? $_GET['status'] : [];
 $sort_option = isset($_GET['sort']) ? $_GET['sort'] : '';
 
-// Prepare SQL query with filters and sorting
 $sql = "SELECT * FROM tasks WHERE id_user = ?";
 $params = [];
 $types = "i";
 $params[] = $id_user;
-
-if (!empty($filter_categories) && is_array($filter_categories)) {
-    $placeholders = implode(',', array_fill(0, count($filter_categories), '?'));
-    $sql .= " AND category IN ($placeholders)";
-    $types .= str_repeat('s', count($filter_categories));
-    $params = array_merge($params, $filter_categories);
-}
 
 if ($sort_option === 'Deadline') {
     $sql .= " ORDER BY deadline ASC";
@@ -71,157 +63,126 @@ $task_count = count($tasks);
     <title>Taskify | Dashboard</title>
   </head>
   <body class="bg-primary">
-    <!-- Navbar -->
-<?php include 'header.php'; ?>
+    <?php include 'header.php'; ?>
 
-    <!-- Content -->
     <main class="container mx-auto mt-[86px] grid grid-cols-6 space-x-4">
-      <!-- Filter & Filler -->
       <div class="">
         <img src="../src/asset/img/docs.svg" alt="" class="w-full"/>
         <div class="mt-6 space-y-[18px]">
-          <form method="GET" action="dashboard.php">
-            <button
-              type="button"
-              onclick="toggleAccordion(1)"
-              class="w-full flex space-x-4 items-center cursor-pointer"
-            >
-              <span
-                class="font-mont font-semibold tracking-[-1.92px] text-2xl text-accent"
-                >Filters</span
+            <div id="filter-section">
+              <button
+                type="button"
+                onclick="toggleAccordion(1)"
+                class="w-full flex space-x-4 items-center cursor-pointer"
               >
-              <img
-                id="icon-1"
-                src="../src/asset/icon/arrow-black.svg"
-                alt=""
-                class="transition-transform duration-300 transform rotate-180"
-              />
-            </button>
-
-            <div
-              id="content-1"
-              class="overflow-hidden transition-all duration-300 ease-in-out space-y-[18px]"
-              style="max-height: 1000px"
-            >
-              <!-- Category -->
-              <div class="">
-                <label
-                  for="Category"
-                  class="font-mont font-[400px] tracking-[-1.44px] text-inactive text-[16px]"
-                  >Category</label
+                <span
+                  class="font-mont font-semibold tracking-[-1.92px] text-2xl text-accent"
+                  >Filters</span
                 >
-                <div class="flex flex-col">
-                  <?php
-                  $categories = ['Exam', 'Excercise', 'Presentation', 'Project'];
-                  foreach ($categories as $category) {
-                      $checked = in_array($category, $filter_categories) ? 'checked' : '';
-                      echo '<label class="inline-flex items-center cursor-pointer space-x-2 hover:bg-gray-100">';
-                      echo '<input type="checkbox" name="category[]" value="' . $category . '" class="peer hidden" ' . $checked . ' />';
-                      echo '<span class="w-[14px] h-[14px] rounded-full border border-accent peer-checked:bg-shade peer-checked:border-accent transition-all duration-150"></span>';
-                      echo '<span class="text-[16px] tracking-[-1.12px] font-mont font-normal text-accent">' . $category . '</span>';
-                      echo '</label>';
-                  }
-                  ?>
+                <img
+                  id="icon-1"
+                  src="../src/asset/icon/arrow-black.svg"
+                  alt=""
+                  class="transition-transform duration-300 transform rotate-180"
+                />
+              </button>
+
+              <div
+                id="content-1"
+                class="overflow-hidden transition-all duration-300 ease-in-out space-y-[18px] pt-4"
+                style="max-height: 1000px"
+              >
+                <div class="">
+                  <label
+                    class="font-mont font-[400px] tracking-[-1.44px] text-inactive text-[16px]"
+                    >Category</label
+                  >
+                  <div class="flex flex-col">
+                    <?php
+                    $categories = ['Exam', 'Excercise', 'Presentation', 'Project'];
+                    foreach ($categories as $category) {
+                        $checked = in_array($category, $filter_categories) ? 'checked' : '';
+                        echo '<label class="inline-flex items-center cursor-pointer space-x-2 hover:bg-gray-100">';
+                        echo '<input type="checkbox" name="category[]" value="' . $category . '" class="peer hidden" ' . $checked . ' />';
+                        echo '<span class="w-[14px] h-[14px] rounded-full border border-accent peer-checked:bg-shade peer-checked:border-accent transition-all duration-150"></span>';
+                        echo '<span class="text-[16px] tracking-[-1.12px] font-mont font-normal text-accent">' . $category . '</span>';
+                        echo '</label>';
+                    }
+                    ?>
+                  </div>
                 </div>
-              </div>
+
+                <div class="pt-2">
+                  <label
+                    class="font-mont font-[400px] tracking-[-1.44px] text-inactive text-[16px]"
+                    >Status</label
+                  >
+                  <div class="flex flex-col">
+                    <?php
+                    $statuses = ['Pending', 'Progres', 'Completed'];
+                    foreach ($statuses as $status) {
+                        $checked = in_array($status, $filter_statuses) ? 'checked' : '';
+                        echo '<label class="inline-flex items-center cursor-pointer space-x-2 hover:bg-gray-100">';
+                        echo '<input type="checkbox" name="status[]" value="' . $status . '" class="peer hidden" ' . $checked . ' />';
+                        echo '<span class="w-[14px] h-[14px] rounded-full border border-accent peer-checked:bg-shade peer-checked:border-accent transition-all duration-150"></span>';
+                        echo '<span class="text-[16px] tracking-[-1.12px] font-mont font-normal text-accent">' . $status . '</span>';
+                        echo '</label>';
+                    }
+                    ?>
+                  </div>
+                </div>
+                </div>
             </div>
-            <button type="submit" class="hidden">Apply Filters</button>
-          </form>
         </div>
       </div>
 
-      <!-- Task shown -->
       <div class="col-span-5">
-        <!-- Title & sort -->
         <div class=" flex justify-between grow">
           <div class="flex space-x-4 items-center">
-            <h1
-              class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent"
-            >
+            <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent">
               Your Tasks
             </h1>
-            <div
-              class="rounded-full h-[21px] w-[45px] border-accent border flex justify-center items-center"
-            >
-              <span
-                class="font-mont font-semibold tracking--2.08px text-accent text-[16px]"
-                ><?php echo $task_count; ?></span
-              >
+            <div class="rounded-full h-[21px] w-auto min-w-[45px] px-2 border-accent border flex justify-center items-center">
+              <span id="task-count-display" class="font-mont font-semibold tracking--2.08px text-accent text-[16px]"><?php echo $task_count; ?></span>
             </div>
           </div>
           <div class="space-x-2 flex items-center">
-            <span
-              class="font-mont text-[16px] font-normal tracking-[-1.44px] text-inactive"
-              >Sort by</span
-            >
-            <!-- Dropdown Menu -->
+            <span class="font-mont text-[16px] font-normal tracking-[-1.44px] text-inactive">Sort by</span>
             <div class="relative inline-block text-left w-[120px]">
               <div class="relative">
-                <!-- Tombol Select -->
-                <button
-                  id="customSelectButton"
-                  onclick="toggleCustomSelect()"
-                  class="w-full text-left py-2 focus:outline-none flex  items-center cursor-pointer hover:bg-gray-100"
-                >
-                  <span
-                    id="customSelectValue"
-                    class="font-mont text-[16px] font-medium tracking-[-1.44px] text-accent"
-                    ><?php echo $sort_option ? $sort_option : 'None'; ?></span
-                  >
+                <button id="customSelectButton" onclick="toggleCustomSelect()" class="w-full text-left py-2 focus:outline-none flex  items-center cursor-pointer hover:bg-gray-100">
+                  <span id="customSelectValue" class="font-mont text-[16px] font-medium tracking-[-1.44px] text-accent"><?php echo $sort_option ? $sort_option : 'None'; ?></span>
                 </button>
-
-                <!-- Dropdown Options -->
-                <ul
-                  id="customSelectDropdown"
-                  class="absolute left-0 z-10 w-full mt-1 rounded-md shadow-lg hidden max-h-60 overflow-y-auto text-[16px] tracking-[-1.12px] font-mont font-normal text-primary bg-accent"
-                >
-                  <li
-                    class="p-2 hover:bg-shade cursor-pointer"
-                    onclick="selectOption('Deadline')"
-                  >
-                    Deadline
-                  </li>
-                  <li
-                    class="p-2 hover:bg-shade cursor-pointer"
-                    onclick="selectOption('Name')"
-                  >
-                    Name
-                  </li>
+                <ul id="customSelectDropdown" class="absolute left-0 z-10 w-full mt-1 rounded-md shadow-lg hidden max-h-60 overflow-y-auto text-[16px] tracking-[-1.12px] font-mont font-normal text-primary bg-accent">
+                  <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('Deadline')">Deadline</li>
+                  <li class="p-2 hover:bg-shade cursor-pointer" onclick="selectOption('Name')">Name</li>
                 </ul>
-
-                <!-- Optional: hidden input for form use -->
                 <form id="sortForm" method="GET" action="dashboard.php">
-                  <input
-                    type="hidden"
-                    id="customSelectInput"
-                    name="sort"
-                    value="<?php echo htmlspecialchars($sort_option); ?>"
-                  />
+                  <input type="hidden" id="customSelectInput" name="sort" value="<?php echo htmlspecialchars($sort_option); ?>" />
                   <?php
-                  // Preserve category filters in sort form
+                  // Preserve filters in sort form
                   foreach ($filter_categories as $cat) {
                       echo '<input type="hidden" name="category[]" value="' . htmlspecialchars($cat) . '">';
+                  }
+                  foreach ($filter_statuses as $stat) {
+                      echo '<input type="hidden" name="status[]" value="' . htmlspecialchars($stat) . '">';
                   }
                   ?>
                 </form>
               </div>
             </div>
-            <button
-              class="h-6 cursor-pointer hover:bg-gray-100"
-              onclick="document.getElementById('sortForm').submit()"
-            >
+            <button class="h-6 cursor-pointer hover:bg-gray-100" onclick="document.getElementById('sortForm').submit()">
               <img src="../src/asset/icon/sort.svg" alt="" />
             </button>
           </div>
         </div>
 
-        <!-- Task card -->
-        <div class="grid grid-cols-5 gap-x-6 gap-y-[18px] mt-[18px]">
+        <div id="task-container" class="grid grid-cols-5 gap-x-6 gap-y-[18px] mt-[18px]">
         <?php if (count($tasks) === 0): ?>
-            <p class="text-accent font-mont col-span-2">No tasks added yet.</p>
+            <p id="no-tasks-message" class="text-accent font-mont col-span-2">No tasks added yet.</p>
             <?php else: ?>
                 <?php foreach ($tasks as $task): ?>
-                    <div class="rounded-[17px] border border-inactive">
+                    <div class="rounded-[17px] border border-inactive task-card">
                         <div class="gradient-box bg-gradient-to-t <?php echo htmlspecialchars($task['cover_color']); ?> m-[6px] rounded-[12px] flex items-end">
                             <div class="mx-4 mb-6">
                                 <h2 class="font-mont font-semibold text-xl mb-2 tracking-[-1.12px] leading-5"><?php echo htmlspecialchars($task['task_name']); ?></h2>
@@ -231,10 +192,10 @@ $task_count = count($tasks);
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <span class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                    <span class="task-category inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
                                         <?php echo htmlspecialchars($task['category']); ?>
                                     </span>
-                                    <span class="inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
+                                    <span class="task-status inline border border-accent rounded-full w-fits px-2 py-1 text-[12px] font-semibold">
                                         <?php echo htmlspecialchars($task['status']); ?>
                                     </span>
                                 </div>
@@ -251,6 +212,7 @@ $task_count = count($tasks);
                         </div>
                     </div>
                 <?php endforeach; ?>
+                <p id="no-tasks-match" class="text-accent font-mont col-span-5 hidden">No tasks match the selected filters.</p>
             <?php endif; ?>
         </div>
       </div>
@@ -259,9 +221,7 @@ $task_count = count($tasks);
       function toggleAccordion(index) {
         const content = document.getElementById(`content-${index}`);
         const icon = document.getElementById(`icon-${index}`);
-
         const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-
         if (isOpen) {
           content.style.maxHeight = '0';
           icon.classList.remove('rotate-180');
@@ -273,16 +233,11 @@ $task_count = count($tasks);
 
       function toggleCustomSelect() {
         const dropdown = document.getElementById('customSelectDropdown');
-        const arrow = document.getElementById('selectArrow');
-
         const isOpen = !dropdown.classList.contains('hidden');
-
         if (isOpen) {
           dropdown.classList.add('hidden');
-          arrow.classList.remove('rotate-180');
         } else {
           dropdown.classList.remove('hidden');
-          arrow.classList.add('rotate-180');
         }
       }
 
@@ -292,28 +247,88 @@ $task_count = count($tasks);
         toggleCustomSelect();
       }
 
-      // Optional: close on click outside
       document.addEventListener('click', function (event) {
         const dropdown = document.getElementById('customSelectDropdown');
         const button = document.getElementById('customSelectButton');
         if (!button.contains(event.target) && !dropdown.contains(event.target)) {
           dropdown.classList.add('hidden');
-          document.getElementById('selectArrow').classList.remove('rotate-180');
         }
       });
-              function setGradientBoxAspectRatio() {
-            const gradientBoxes = document.querySelectorAll('.gradient-box');
-            gradientBoxes.forEach(box => {
-                const width = box.clientWidth;
-                const height = (width * 4) / 5; // Adjusted to 4/5 as per previous discussion
-                box.style.height = `${height}px`;
-            });
+
+      function setGradientBoxAspectRatio() {
+        const gradientBoxes = document.querySelectorAll('.gradient-box');
+        gradientBoxes.forEach(box => {
+            const width = box.clientWidth;
+            const height = (width * 4) / 5;
+            box.style.height = `${height}px`;
+        });
+      }
+
+      function applyFilters() {
+
+        const checkedCategoryCheckboxes = document.querySelectorAll('input[name="category[]"]:checked');
+        const selectedCategories = Array.from(checkedCategoryCheckboxes).map(cb => cb.value);
+
+        const checkedStatusCheckboxes = document.querySelectorAll('input[name="status[]"]:checked');
+        const selectedStatuses = Array.from(checkedStatusCheckboxes).map(cb => cb.value);
+
+
+        const allTasks = document.querySelectorAll('.task-card');
+        const noTasksMatchMessage = document.getElementById('no-tasks-match');
+        let visibleTaskCount = 0;
+
+        allTasks.forEach(taskCard => {
+            const taskCategoryElement = taskCard.querySelector('.task-category');
+
+            const taskStatusElement = taskCard.querySelector('.task-status');
+
+            if (taskCategoryElement && taskStatusElement) {
+                const taskCategory = taskCategoryElement.textContent.trim();
+                const taskStatus = taskStatusElement.textContent.trim();
+
+                const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(taskCategory);
+                const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(taskStatus);
+
+                if (categoryMatch && statusMatch) {
+                    taskCard.style.display = 'block';
+                    visibleTaskCount++;
+                } else {
+                    taskCard.style.display = 'none';
+                }
+            }
+        });
+
+        const taskCountDisplay = document.getElementById('task-count-display');
+        if(taskCountDisplay) {
+            taskCountDisplay.textContent = visibleTaskCount;
         }
 
-        document.addEventListener('DOMContentLoaded', setGradientBoxAspectRatio);
-        window.addEventListener('resize', setGradientBoxAspectRatio);
+        if (visibleTaskCount === 0 && allTasks.length > 0) {
+            noTasksMatchMessage.classList.remove('hidden');
+        } else {
+            noTasksMatchMessage.classList.add('hidden');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        setGradientBoxAspectRatio();
+
+        const categoryCheckboxes = document.querySelectorAll('input[name="category[]"]');
+        categoryCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', applyFilters);
+        });
+
+        const statusCheckboxes = document.querySelectorAll('input[name="status[]"]');
+        statusCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', applyFilters);
+        });
+        // END: Status Filter Logic
+
+        applyFilters();
+      });
+
+      window.addEventListener('resize', setGradientBoxAspectRatio);
     </script>
-    </script>
-<?php include 'footer.php'; ?>
+    <?php include 'footer.php'; ?>
   </body>
 </html>

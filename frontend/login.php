@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </head>
   <body class="bg-accent">
     <div class="container mx-auto grow grid grid-cols-2 my-14">
-        <div class="flex flex-col h-full flex-grow">
+        <div class="flex flex-col h-[920px] flex-grow">
             <div>
                 <img src="../src/asset/icon/logo-white.svg" alt="logo" />
             </div>
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="bg-primary rounded-[20px] h-full flex items-center">
             <form class="px-8 flex flex-col w-full" method="POST" action="login.php">
-                <div class="text-left">
+                <div class="block">
                     <h1 class="font-mont text-shade text-8xl font-medium tracking-[-1.4px]">Login</h1>
                 </div>
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="./signup.php" class="font-dm text-[16px] italic underline hover:decoration-amber-300 tracking-[-1.12px]">Create an account?</a>
                     </div>
                 </div>
-                <span class="flex px-5 justify-end pb-[32px]">
+                <span class="flex px-5 justify-end pb-[32px] mt-5">
                     <button type="submit" class="group bg-accent rounded-full h-20 w-20 flex items-center justify-center transition-transform duration-200 hover:scale-140">
                         <img src="../src/asset/icon/right-arrow.svg" alt="arrow" class="w-9 h-[46px]" />
                     </button>

@@ -53,7 +53,7 @@ if (isset($_POST['delete_account'])) {
       <?php if (!empty($cover_picture) && $cover_picture !== ''): ?>
         <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="w-full max-h-48 object-cover" />
       <?php else: ?>
-        <img src="../src/asset/img/gradient.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover" />
+        <img src="../src/asset/img/gradient-1.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover" />
       <?php endif; ?>
     </div>
 

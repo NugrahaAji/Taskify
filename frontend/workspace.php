@@ -12,12 +12,12 @@ include '../backend/db.php';
 class WorkspaceManager {
     private $conn;
     private $user_id;
-    
+
     public function __construct($connection, $user_id) {
         $this->conn = $connection;
         $this->user_id = $user_id;
     }
-    
+
     /**
      * Get user's workspace ID
      */
@@ -27,21 +27,21 @@ class WorkspaceManager {
             error_log("Failed to prepare workspace query: " . $this->conn->error);
             return null;
         }
-        
+
         $stmt->bind_param("i", $this->user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $workspace = $result->fetch_assoc();
             $stmt->close();
             return $workspace['id_workspace'];
         }
-        
+
         $stmt->close();
         return null;
     }
-    
+
     /**
      * Add collaborator to workspace
      */
@@ -49,62 +49,62 @@ class WorkspaceManager {
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return "Invalid email address.";
         }
-        
+
         // Find user by email
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         if (!$stmt) {
             error_log("Failed to prepare user find statement: " . $this->conn->error);
             return "System error occurred.";
         }
-        
+
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows !== 1) {
             $stmt->close();
             return "User with that email not found.";
         }
-        
+
         $collab_user = $result->fetch_assoc();
         $collab_user_id = $collab_user['id'];
         $stmt->close();
-        
+
         // Prevent adding self as collaborator
         if ($collab_user_id == $this->user_id) {
             return "You cannot add yourself as a collaborator.";
         }
-        
+
         // Get workspace ID
         $workspace_id = $this->getUserWorkspaceId();
         if ($workspace_id === null) {
             return "No workspace found. Please create a workspace first.";
         }
-        
+
         // Check if already collaborator
         $stmt = $this->conn->prepare("SELECT id_collab FROM collaborators WHERE id_workspace = ? AND id_user = ?");
         if (!$stmt) {
             error_log("Failed to prepare collaborator check statement: " . $this->conn->error);
             return "System error occurred.";
         }
-        
+
         $stmt->bind_param("ii", $workspace_id, $collab_user_id);
         $stmt->execute();
         $check_result = $stmt->get_result();
-        
+
         if ($check_result->num_rows > 0) {
             $stmt->close();
             return "This user is already a collaborator in your workspace.";
         }
         $stmt->close();
-        
+
         // Add collaborator
         $stmt = $this->conn->prepare("INSERT INTO collaborators (id_workspace, id_user) VALUES (?, ?)");
         if (!$stmt) {
             error_log("Failed to prepare collaborator insert statement: " . $this->conn->error);
             return "System error occurred.";
         }
-        
+
         $stmt->bind_param("ii", $workspace_id, $collab_user_id);
         if ($stmt->execute()) {
             $stmt->close();
@@ -115,7 +115,7 @@ class WorkspaceManager {
             return "Failed to add collaborator.";
         }
     }
-    
+
     /**
      * Get user's tasks
      */
@@ -125,20 +125,20 @@ class WorkspaceManager {
             error_log("Failed to prepare tasks fetch statement: " . $this->conn->error);
             return [];
         }
-        
+
         $stmt->bind_param("i", $this->user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $tasks = [];
         while ($row = $result->fetch_assoc()) {
             $tasks[] = $row;
         }
-        
+
         $stmt->close();
         return $tasks;
     }
-    
+
     /**
      * Get workspace collaborators
      */
@@ -147,29 +147,29 @@ class WorkspaceManager {
         if ($workspace_id === null) {
             return [];
         }
-        
+
         $stmt = $this->conn->prepare("
-            SELECT c.id_collab, u.username, u.email 
-            FROM collaborators c 
-            JOIN users u ON c.id_user = u.id 
+            SELECT c.id_collab, u.username, u.email
+            FROM collaborators c
+            JOIN users u ON c.id_user = u.id
             WHERE c.id_workspace = ?
             ORDER BY u.username ASC
         ");
-        
+
         if (!$stmt) {
             error_log("Failed to prepare collaborators fetch statement: " . $this->conn->error);
             return [];
         }
-        
+
         $stmt->bind_param("i", $workspace_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $collaborators = [];
         while ($row = $result->fetch_assoc()) {
             $collaborators[] = $row;
         }
-        
+
         $stmt->close();
         return $collaborators;
     }
@@ -185,7 +185,7 @@ $message_type = 'error'; // 'success' or 'error'
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_collaborator'])) {
     $collab_email = trim($_POST['collab_email'] ?? '');
     $result = $workspace->addCollaborator($collab_email);
-    
+
     if ($result === 'success') {
         $collab_message = "Collaborator added successfully.";
         $message_type = 'success';
@@ -238,12 +238,12 @@ function formatDeadline($datetime) {
     <main class="container mx-auto mt-[86px]">
         <div class="flex justify-between items-center mb-6">
             <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent">Your workspace</h1>
-            <a href="add-task.php" 
+            <a href="add-task.php"
                class="bg-accent text-primary px-4 py-2 rounded-[12px] font-normal tracking-[-1px] hover:scale-105 ease-in-out transform transition-all duration-300 shadow-lg hover:shadow-xl">
                 Add Task
             </a>
         </div>
-        
+
         <!-- Tasks Section -->
         <section class="grid grid-cols-6 gap-x-6 gap-y-[18px] mt-[18px] mb-10">
             <?php if (empty($tasks)): ?>
@@ -253,8 +253,8 @@ function formatDeadline($datetime) {
                     <div class="rounded-[17px] border border-inactive">
                         <div class="gradient-box bg-gradient-to-t <?php echo htmlspecialchars($task['cover_color']); ?> m-[6px] rounded-[12px] flex items-end">
                             <div class="mx-4 mb-6">
-                                <h2 class="font-mont font-semibold text-xl mb-2 tracking-[-1.12px] leading-5"><?php echo htmlspecialchars($task['task_name']); ?></h2>
-                                <div class="flex items-center space-x-2">
+                                <h2 class="font-mont font-semibold text-xl mb-1 tracking-[-1.12px] leading-5"><?php echo htmlspecialchars($task['task_name']); ?></h2>
+                                <div class="flex items-center space-x-2 mb-1">
                                     <div class="inline font-medium tracking-[-1.08px] text-[14px]">
                                         <?php echo htmlspecialchars($task['subject']); ?>
                                     </div>
@@ -286,7 +286,7 @@ function formatDeadline($datetime) {
         <!-- Collaborators Section -->
         <section class="mb-10 w-full">
             <h2 class="font-mont font-semibold text-xl mb-2 tracking-[-1.12px] text-accent">Collaborators</h2>
-            
+
             <!-- Current Collaborators -->
             <h3 class="font-mont font-semibold mb-2 tracking-[-1.1px]">Current Collaborators</h3>
             <?php if (empty($collaborators)): ?>
@@ -305,17 +305,17 @@ function formatDeadline($datetime) {
                     <?= h($collab_message) ?>
                 </p>
             <?php endif; ?>
-            
+
             <!-- Add Collaborator Form -->
             <h3 class="font-mont font-semibold mb-2 tracking-[-1.1px]">Add Collaborators</h3>
             <form method="POST" action="workspace.php" class="space-y-4" id="collaborator-form">
                 <input type="hidden" name="add_collaborator" value="1" />
                 <div>
                     <label class="block font-mont text-accent mb-1" for="collab_email">Collaborator Email</label>
-                    <input type="email" id="collab_email" name="collab_email" required 
+                    <input type="email" id="collab_email" name="collab_email" required
                            class="w-lg border-b border-black outline-none focus:ring-0 h-[41px] text-[16px] hover:bg-gray-100" />
                 </div>
-                <button type="submit" 
+                <button type="submit"
                         class="bg-accent text-primary px-4 py-2 rounded font-normal text-[16px] tracking-[-0.9px] flex items-center group space-x-2 transform transition ease-in-out duration-1000 disabled:opacity-50"
                         id="submit-btn">
                     <img src="../src/asset/icon/plus.svg" alt="" class="hidden group-hover:block">
@@ -340,7 +340,7 @@ function formatDeadline($datetime) {
         function enhanceForm() {
             const form = document.getElementById('collaborator-form');
             const submitBtn = document.getElementById('submit-btn');
-            
+
             if (form && submitBtn) {
                 form.addEventListener('submit', function() {
                     submitBtn.disabled = true;

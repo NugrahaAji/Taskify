@@ -61,19 +61,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </head>
   <body class="bg-accent">
     <div class="container mx-auto grow grid grid-cols-2 my-14">
-      <div class="flex flex-col h-[920px]">
+      <div class="flex flex-col h-[920px] flex-grow">
         <div>
           <img src="../src/asset/icon/logo-white.svg" alt="logo" />
         </div>
         <div class="flex-grow flex items-center justify-center">
           <div class="flip-slideshow">
-            <img class="h-[574px]" id="flipImage" src="../src/asset/icon/calendar.svg" alt="icon" />
+            <img class="h-[400px]" id="flipImage" src="../src/asset/icon/calendar.svg" alt="icon" />
           </div>
         </div>
       </div>
 
-      <div class="bg-primary rounded-[20px] h-[920px] items-end grid">
-        <form class="px-8 flex-col flex w-full" method="POST" action="signup.php">
+      <div class="bg-primary rounded-[20px] h-full items-end grid">
+        <form class="px-8 flex-col flex w-full mb-48" method="POST" action="signup.php">
           <div class="block">
             <h1 class="font-mont text-shade text-8xl font-medium tracking-[-14.4px]">Sign Up</h1>
           </div>
@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
           </div>
 
-          <span class="flex px-[52px] justify-end pb-[52px]">
+          <span class="flex px-[52px] justify-end pb-[52px] mt-5">
             <button type="submit" class="group bg-accent rounded-full h-20 w-20 flex items-center justify-center transition-transform duration-200 hover:scale-140">
               <img src="../src/asset/icon/right-arrow.svg" alt="arrow" class="w-9 h-[46px]" />
             </button>

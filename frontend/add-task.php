@@ -5,7 +5,7 @@ if (!isset($_SESSION['id_user'])) {
     exit();
 }
 
-include '../backend/db.php'; // Pastikan path ini benar
+include '../backend/db.php';
 
 $id_user = $_SESSION['id_user'];
 
@@ -20,28 +20,25 @@ $stmt->close();
 // Handle adding new task
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $task_name = $_POST['task_name'] ?? '';
-    $category = $_POST['category'] ?? ''; // Mengambil dari name="category"
+    $category = $_POST['category'] ?? '';
     $deadline = $_POST['deadline'] ?? null;
     $subject = $_POST['subject'] ?? '';
     $description = $_POST['description'] ?? '';
-    $cover_color = $_POST['cover_color'] ?? ''; // Mengambil dari name="cover_color"
-    $status = $_POST['status'] ?? 'pending'; // Mengambil dari name="status"
+    $cover_color = $_POST['cover_color'] ?? '';
 
-    // Map status to ENUM values in DB
     $status_map = [
-        'pending' => 'pending',
-        'In progress' => 'in_progress',
-        'completed' => 'completed'
+        'pending' => 'Pending',
+        'In progress' => 'Progres',
+        'completed' => 'Completed'
     ];
     if (isset($status_map[$status])) {
         $status = $status_map[$status];
     } else {
-        $status = 'pending'; // default fallback
+        $status = 'Pending'; // default fallback
     }
 
-    // Pastikan nilai default jika tidak dipilih dari dropdown (misal dari JavaScript)
     if (empty($category)) $category = 'General'; // Default value jika dropdown tidak dipilih
-    if (empty($status)) $status = 'pending'; // Default value
+    if (empty($status)) $status = 'Pending'; // Default value
     if (empty($cover_color)) $cover_color = 'from-grs to-gre'; // Default color
 
     // Insert new task
@@ -50,6 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $stmt->execute();
     $stmt->close();
 }
+
+$stmt = $conn->prepare("SELECT cover_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $id_user);
+$stmt->execute();
+$stmt->bind_result($cover_picture);
+$stmt->fetch();
+$stmt->close();
 
 // Fetch tasks for user
 $stmt = $conn->prepare("SELECT * FROM tasks WHERE id_user = ?");
@@ -84,14 +88,22 @@ $stmt->close();
     <link rel="icon" href="../src/asset/icon/Taskify.ico" type="image/x-icon" />
     <link href="../src/style.css" rel="stylesheet" />
 </head>
+
 <body class="bg-primary">
 <?php include 'header.php'; ?>
+    <div>
+        <?php if (!empty($cover_picture)): ?>
+            <img src="../src/asset/img/<?= htmlspecialchars($cover_picture) ?>" alt="Cover Picture" class="w-full max-h-48 object-cover" />
+        <?php else: ?>
+            <img src="../src/asset/img/gradient-1.png" alt="Default Cover Picture" class="w-full max-h-48 object-cover" />
+        <?php endif; ?>
+    </div>
 
-    <main class="container mx-auto mt-[86px]">
+    <main class="container mx-auto mt-[40px]">
         <h1 class="font-mont font-semibold tracking-[-2.88px] text-[32px] text-accent mb-6">Add new task</h1>
 
         <section class="mb-10">
-<form method="POST" action="add-task.php" class="w-full ">
+        <form method="POST" action="add-task.php" class="w-full ">
                 <div class="grid grid-cols-2 gap-x-10 space-y-4">
                     <input type="hidden" name="add_task" value="1" />
                     <div>
